@@ -1,0 +1,5 @@
+python-barcode
+Pillow
+rich
+jsonschema
+pytest
