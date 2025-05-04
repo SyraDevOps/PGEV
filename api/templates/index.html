@@ -1,0 +1,509 @@
+ -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KniModas - Sistema de Gerenciamento</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+        }
+        .nav-tabs .nav-link {
+            color: #e0e0e0;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: #212121;
+            color: #ffffff;
+            border-color: #333;
+        }
+        .card {
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+        }
+        .table {
+            color: #e0e0e0;
+        }
+        .form-control, .form-select {
+            background-color: #333;
+            color: #ffffff;
+            border: 1px solid #444;
+        }
+        .form-control::placeholder, .form-select::placeholder {
+            color: #aaa;
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: #444;
+            color: #ffffff;
+        }
+        .btn-primary {
+            background-color: #ffffff;
+            color: #000000;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #e0e0e0;
+            color: #000000;
+        }
+        .btn-secondary {
+            background-color: #333;
+            color: #ffffff;
+        }
+        .btn-danger {
+            background-color: #b71c1c;
+        }
+        .qr-image {
+            max-width: 200px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg" style="background-color: #000000;">
+        <div class="container">
+            <a class="navbar-brand text-white" href="#">KniModas</a>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2>Sistema de Gerenciamento</h2>
+        
+        <ul class="nav nav-tabs mt-4" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="produtos-tab" data-bs-toggle="tab" data-bs-target="#produtos" type="button" role="tab">Produtos</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="vendas-tab" data-bs-toggle="tab" data-bs-target="#vendas" type="button" role="tab">Vendas</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="clientes-tab" data-bs-toggle="tab" data-bs-target="#clientes" type="button" role="tab">Clientes</button>
+            </li>
+        </ul>
+        
+        <div class="tab-content p-3" id="myTabContent">
+            <!-- Produtos Tab -->
+            <div class="tab-pane fade show active" id="produtos" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">Cadastrar Produto</div>
+                            <div class="card-body">
+                                <form id="formProduto">
+                                    <div class="mb-3">
+                                        <label for="nome" class="form-label">Nome</label>
+                                        <input type="text" class="form-control" id="nome" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="descricao" class="form-label">Descrição</label>
+                                        <textarea class="form-control" id="descricao" rows="2"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="categoria" class="form-label">Categoria</label>
+                                        <input type="text" class="form-control" id="categoria">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="codigo_barras" class="form-label">Código de Barras</label>
+                                        <input type="text" class="form-control" id="codigo_barras" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="fornecedor" class="form-label">Fornecedor</label>
+                                        <input type="text" class="form-control" id="fornecedor">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="preco" class="form-label">Preço</label>
+                                        <input type="number" step="0.01" class="form-control" id="preco" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="quantidade" class="form-label">Quantidade</label>
+                                        <input type="number" class="form-control" id="quantidade" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="local_armazenamento" class="form-label">Local de Armazenamento</label>
+                                        <input type="text" class="form-control" id="local_armazenamento">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Cadastrar</button>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <div class="card mt-4" id="qrCodeContainer" style="display:none;">
+                            <div class="card-header">QR Code</div>
+                            <div class="card-body text-center">
+                                <div id="qrCodeDisplay"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">Lista de Produtos</div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Nome</th>
+                                                <th>Código</th>
+                                                <th>Preço</th>
+                                                <th>Estoque</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="produtosTable">
+                                            <!-- Produtos serão inseridos aqui -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Vendas Tab -->
+            <div class="tab-pane fade" id="vendas" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">Registrar Venda</div>
+                            <div class="card-body">
+                                <form id="formVenda">
+                                    <div class="mb-3">
+                                        <label for="venda_codigo_barras" class="form-label">Código de Barras</label>
+                                        <input type="text" class="form-control" id="venda_codigo_barras" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="venda_quantidade" class="form-label">Quantidade</label>
+                                        <input type="number" class="form-control" id="venda_quantidade" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="venda_preco_total" class="form-label">Preço Total</label>
+                                        <input type="number" step="0.01" class="form-control" id="venda_preco_total" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="venda_forma_pagamento" class="form-label">Forma de Pagamento</label>
+                                        <select class="form-select" id="venda_forma_pagamento">
+                                            <option value="PIX">PIX</option>
+                                            <option value="Cartão de Crédito">Cartão de Crédito</option>
+                                            <option value="Cartão de Débito">Cartão de Débito</option>
+                                            <option value="Dinheiro">Dinheiro</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="venda_desconto" class="form-label">Desconto</label>
+                                        <input type="number" step="0.01" class="form-control" id="venda_desconto" value="0">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="venda_nome_cliente" class="form-label">Nome do Cliente</label>
+                                        <input type="text" class="form-control" id="venda_nome_cliente">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Registrar Venda</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">Histórico de Vendas</div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Data</th>
+                                                <th>Produto</th>
+                                                <th>Qtd</th>
+                                                <th>Total</th>
+                                                <th>Cliente</th>
+                                                <th>Pagamento</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="vendasTable">
+                                            <!-- Vendas serão inseridas aqui -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Clientes Tab -->
+            <div class="tab-pane fade" id="clientes" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">Cadastrar Cliente</div>
+                            <div class="card-body">
+                                <form id="formCliente">
+                                    <div class="mb-3">
+                                        <label for="cliente_nome" class="form-label">Nome</label>
+                                        <input type="text" class="form-control" id="cliente_nome" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="cliente_telefone" class="form-label">Telefone</label>
+                                        <input type="text" class="form-control" id="cliente_telefone" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="cliente_email" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="cliente_email">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Cadastrar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">Lista de Clientes</div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Nome</th>
+                                                <th>Telefone</th>
+                                                <th>Email</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="clientesTable">
+                                            <!-- Clientes serão inseridos aqui -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Configuração da API
+        const API_URL = 'http://127.0.0.1:5000/api';
+        
+        // Carregar dados quando o documento estiver pronto
+        document.addEventListener('DOMContentLoaded', function() {
+            carregarProdutos();
+            carregarVendas();
+            carregarClientes();
+            
+            // Configurar eventos de formulários
+            document.getElementById('formProduto').addEventListener('submit', cadastrarProduto);
+            document.getElementById('formVenda').addEventListener('submit', registrarVenda);
+            document.getElementById('formCliente').addEventListener('submit', cadastrarCliente);
+            
+            // Configurar eventos de abas
+            document.getElementById('produtos-tab').addEventListener('click', carregarProdutos);
+            document.getElementById('vendas-tab').addEventListener('click', carregarVendas);
+            document.getElementById('clientes-tab').addEventListener('click', carregarClientes);
+        });
+        
+        // Funções para Produtos
+        function carregarProdutos() {
+            fetch(`${API_URL}/produtos`)
+                .then(response => response.json())
+                .then(data => {
+                    const tabela = document.getElementById('produtosTable');
+                    tabela.innerHTML = '';
+                    
+                    data.forEach(produto => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${produto.nome}</td>
+                            <td>${produto.codigo_barras}</td>
+                            <td>R$ ${parseFloat(produto.preco).toFixed(2)}</td>
+                            <td>${produto.quantidade}</td>
+                            <td>
+                                <button class="btn btn-sm btn-secondary" onclick="verQRCode('${produto.nome}', 1)">QR Code</button>
+                                <button class="btn btn-sm btn-danger" onclick="excluirProduto('${produto.codigo_barras}')">Excluir</button>
+                            </td>
+                        `;
+                        tabela.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Erro ao carregar produtos:', error));
+        }
+        
+        function cadastrarProduto(event) {
+            event.preventDefault();
+            
+            const produto = {
+                nome: document.getElementById('nome').value,
+                descricao: document.getElementById('descricao').value,
+                categoria: document.getElementById('categoria').value,
+                codigo_barras: document.getElementById('codigo_barras').value,
+                fornecedor: document.getElementById('fornecedor').value,
+                preco: document.getElementById('preco').value,
+                quantidade: document.getElementById('quantidade').value,
+                local_armazenamento: document.getElementById('local_armazenamento').value
+            };
+            
+            fetch(`${API_URL}/produtos`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(produto)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.error || 'Erro ao cadastrar produto'); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('Produto cadastrado com sucesso!');
+                document.getElementById('formProduto').reset();
+                carregarProdutos();
+                verQRCode(produto.nome, 1);
+            })
+            .catch(error => alert(error.message));
+        }
+        
+        function excluirProduto(codigo) {
+            if (confirm('Tem certeza que deseja excluir este produto?')) {
+                fetch(`${API_URL}/produtos/${codigo}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw new Error(err.error || 'Erro ao excluir produto'); });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert('Produto excluído com sucesso!');
+                    carregarProdutos();
+                })
+                .catch(error => alert(error.message));
+            }
+        }
+        
+        function verQRCode(nome, unidade) {
+            document.getElementById('qrCodeContainer').style.display = 'block';
+            document.getElementById('qrCodeDisplay').innerHTML = `
+                <h5>QR Code para: ${nome}</h5>
+                <img src="/qrcode/${nome}_${unidade}.png" class="qr-image" alt="QR Code do produto ${nome}">
+            `;
+        }
+        
+        // Funções para Vendas
+        function carregarVendas() {
+            fetch(`${API_URL}/vendas`)
+                .then(response => response.json())
+                .then(data => {
+                    const tabela = document.getElementById('vendasTable');
+                    tabela.innerHTML = '';
+                    
+                    data.forEach(venda => {
+                        const dataFormatada = new Date(venda.data_hora).toLocaleDateString('pt-BR');
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${dataFormatada}</td>
+                            <td>${venda.codigo_barras}</td>
+                            <td>${venda.quantidade}</td>
+                            <td>R$ ${parseFloat(venda.preco_total).toFixed(2)}</td>
+                            <td>${venda.nome_cliente || '-'}</td>
+                            <td>${venda.forma_pagamento}</td>
+                        `;
+                        tabela.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Erro ao carregar vendas:', error));
+        }
+        
+        function registrarVenda(event) {
+            event.preventDefault();
+            
+            const venda = {
+                codigo_barras: document.getElementById('venda_codigo_barras').value,
+                quantidade: document.getElementById('venda_quantidade').value,
+                preco_total: document.getElementById('venda_preco_total').value,
+                forma_pagamento: document.getElementById('venda_forma_pagamento').value,
+                desconto: document.getElementById('venda_desconto').value,
+                nome_cliente: document.getElementById('venda_nome_cliente').value
+            };
+            
+            fetch(`${API_URL}/vendas`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(venda)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.error || 'Erro ao registrar venda'); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('Venda registrada com sucesso!');
+                document.getElementById('formVenda').reset();
+                carregarVendas();
+            })
+            .catch(error => alert(error.message));
+        }
+        
+        // Funções para Clientes
+        function carregarClientes() {
+            fetch(`${API_URL}/clientes`)
+                .then(response => response.json())
+                .then(data => {
+                    const tabela = document.getElementById('clientesTable');
+                    tabela.innerHTML = '';
+                    
+                    data.forEach(cliente => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${cliente.nome}</td>
+                            <td>${cliente.telefone}</td>
+                            <td>${cliente.email || '-'}</td>
+                        `;
+                        tabela.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Erro ao carregar clientes:', error));
+        }
+        
+        function cadastrarCliente(event) {
+            event.preventDefault();
+            
+            const cliente = {
+                nome: document.getElementById('cliente_nome').value,
+                telefone: document.getElementById('cliente_telefone').value,
+                email: document.getElementById('cliente_email').value
+            };
+            
+            fetch(`${API_URL}/clientes`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(cliente)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.error || 'Erro ao cadastrar cliente'); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('Cliente cadastrado com sucesso!');
+                document.getElementById('formCliente').reset();
+                carregarClientes();
+            })
+            .catch(error => alert(error.message));
+        }
+    </script>
+</body>
+</html>
